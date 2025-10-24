@@ -2,7 +2,7 @@
 
 Real-time financial news sentiment analysis for Apple Inc. (AAPL) using AI/ML.
 
-![Dashboard Preview](screenshot.png)
+![Dashboard Preview](docs/dashboard.png)
 
 ## 🎯 Live Demo
 
@@ -84,13 +84,13 @@ docker-compose up --build
 ## 📸 Screenshots
 
 ### Main Dashboard
-![Main Dashboard](docs/images/dashboard.png)
+![Main Dashboard](docs/dashboard.png)
 
 ### Sentiment Analysis
-![Sentiment Charts](docs/images/charts.png)
+![Sentiment Charts](docs/charts.png)
 
 ### API Documentation
-![API Docs](docs/images/api-docs.png)
+![API Docs](docs/api-docs.png)
 
 ## 🧪 Testing
 ```bash
@@ -148,3 +148,4 @@ MIT License - See [LICENSE](LICENSE) file for details
 ---
 
 ⭐ Star this repo if you find it helpful!
+
