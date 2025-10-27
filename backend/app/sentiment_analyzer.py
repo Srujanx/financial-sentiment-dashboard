@@ -1,4 +1,5 @@
 import logging
+import threading
 from typing import Dict, List
 from transformers import pipeline
 
@@ -9,6 +10,7 @@ logger = logging.getLogger(__name__)
 settings = get_settings()
 
 _model_pipeline = None
+_model_lock = threading.Lock()  # Thread-safe loading
 
 
 def normalize_label(label: str) -> str:
@@ -47,10 +49,24 @@ def initialize_model():
 
 
 def get_sentiment_pipeline():
+    """
+    Get sentiment pipeline with thread-safe lazy loading.
+    Model loads only on first call to conserve memory at startup.
+    """
     global _model_pipeline
-    if _model_pipeline is None:
-        _model_pipeline = initialize_model()
-    return _model_pipeline
+    
+    # Fast path: if model is already loaded, return it immediately
+    if _model_pipeline is not None:
+        return _model_pipeline
+    
+    # Slow path: need to load model with thread safety
+    with _model_lock:
+        # Double-check after acquiring lock (another thread might have loaded it)
+        if _model_pipeline is None:
+            logger.info("First sentiment analysis request - loading model now...")
+            _model_pipeline = initialize_model()
+            logger.info("Model ready for predictions")
+        return _model_pipeline
 
 
 def analyze_sentiment(text: str) -> Dict:
@@ -64,6 +80,7 @@ def analyze_sentiment(text: str) -> Dict:
         text = text[:settings.MAX_TEXT_LENGTH * 4]
     
     try:
+        # Model loads here on first call (lazy loading)
         pipeline_model = get_sentiment_pipeline()
         result = pipeline_model(text)[0]
         
@@ -95,6 +112,7 @@ def batch_analyze_sentiment(texts: List[str]) -> List[Dict]:
     logger.info(f"Batch analyzing {len(texts)} texts")
     
     try:
+        # Model loads here on first call (lazy loading)
         pipeline_model = get_sentiment_pipeline()
         
         processed_texts = []
