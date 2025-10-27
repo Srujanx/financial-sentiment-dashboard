@@ -63,14 +63,20 @@ def get_settings() -> Settings:
 
 def setup_logging():
     settings = get_settings()
+    
+    handlers = [logging.StreamHandler()]
+    
+    # Try to add file handler, but don't fail if we can't
+    try:
+        logging.FileHandler("/app/logs/app.log")
+        handlers.append(logging.FileHandler("/app/logs/app.log"))
+    except Exception:
+        pass  # Just use console logging if file fails
 
     logging.basicConfig(
         level=getattr(logging, settings.LOG_LEVEL),
         format=settings.LOG_FORMAT,
-        handlers=[
-            logging.StreamHandler(),
-            logging.FileHandler("/app/logs/app.log")
-        ]
+        handlers=handlers
     )
 # Set third-party library log levels
     logging.getLogger("urllib3").setLevel(logging.WARNING)
