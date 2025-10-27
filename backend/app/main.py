@@ -53,14 +53,8 @@ async def startup_event():
         logger.error(f"Configuration error: {e}")
         raise
     
-    # Pre-load ML model
-    try:
-        logger.info("Pre-loading sentiment analysis model...")
-        get_sentiment_pipeline()
-        logger.info("Model loaded successfully")
-    except Exception as e:
-        logger.error(f"Failed to load model: {e}")
-        # Don't fail startup, but log the error
+    # Model will be lazy-loaded on first request to conserve memory
+    logger.info("Model will be loaded on first request (lazy loading enabled)")
 
 
 @app.on_event("shutdown")
@@ -98,10 +92,10 @@ async def health_check():
     model_loaded = False
     api_accessible = False
     
-    # Check if model is loaded
+    # Check if model is loaded (without loading it)
     try:
-        get_sentiment_pipeline()
-        model_loaded = True
+        from app.sentiment_analyzer import _model_pipeline
+        model_loaded = _model_pipeline is not None
     except Exception as e:
         logger.error(f"Model health check failed: {e}")
     
@@ -109,7 +103,7 @@ async def health_check():
     if settings.ALPHA_VANTAGE_API_KEY:
         api_accessible = True
     
-    status = "healthy" if (model_loaded and api_accessible) else "degraded"
+    status = "healthy" if api_accessible else "degraded"
     
     return HealthCheckResponse(
         status=status,
@@ -146,7 +140,7 @@ async def get_news(ticker: str = "AAPL"):
                 # Combine title and summary for analysis
                 text_to_analyze = f"{item['title']}. {item['summary']}"
                 
-                # Run sentiment analysis
+                # Run sentiment analysis (model loads here on first call)
                 ml_sentiment = analyze_sentiment(text_to_analyze)
                 
                 # Create analyzed news item
