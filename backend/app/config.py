@@ -26,7 +26,7 @@ class Settings:
     RATE_LIMIT_PERIOD: int = 86400  # 24 hours in seconds
     
     # Sentiment Analysis
-    MIN_RELEVANCE_SCORE: float = 0.4  # Minimum relevance for news filtering
+    MIN_RELEVANCE_SCORE: float = 0.1  # Minimum relevance for news filtering
     MIN_CONFIDENCE_SCORE: float = 0.6  # Minimum confidence for high-quality predictions
     MAX_TEXT_LENGTH: int = 512  # Maximum tokens for model input
     
