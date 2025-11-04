@@ -20,7 +20,8 @@ st.set_page_config(
 )
 
 # API Configuration
-API_BASE_URL = os.getenv("API_BASE_URL", "http://backend:8000")
+# API Configuration
+API_BASE_URL = os.getenv("API_BASE_URL", "https://sentiment-backend-idfz.onrender.com")
 
 # Custom CSS
 st.markdown("""
