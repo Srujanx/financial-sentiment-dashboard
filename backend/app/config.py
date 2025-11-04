@@ -40,9 +40,11 @@ class Settings:
     API_WORKERS: int = int(os.getenv("API_WORKERS", "1"))
     
     # CORS
+    # CORS
     ALLOWED_ORIGINS: list = [
         "http://localhost:8501",  # Streamlit default
         "http://frontend:8501",   # Docker service name
+        "https://sentiment-frontend-frnx.onrender.com",  # Production frontend
     ]
   # Ticker Configuration
     DEFAULT_TICKER: str = "AAPL"
